@@ -1,8 +1,4 @@
-#import requests
-#from bs4 import BeatifulSoup
-#import math
-#import pandas as pd
-#import re
+
 from selenium import webdriver
 import time
 from selenium.webdriver.chrome.service import Service
@@ -16,15 +12,7 @@ from selenium import webdriver
 from threading import Thread
 from webdriver_manager.chrome import ChromeDriverManager
 import random
-# seed random number generator
-#seed(1)
-# generate some integers
-#for _ in range(10):
-#	value = randint(0, 10)
-#	print(value)
-#mport pyautogui
 
-# import keyboard
 vezes = 0;
 
 
@@ -580,11 +568,3 @@ for i in range(num_janelas):
     threads.append(t)
     t.start()
 
-# votar.clicar_botao_certo()
-# votar.clicar_botao_certo()
-# votar.clicar_botao_certo()
-# votar.clicar_botao_certo()
-# votar.clicar_botao_certo()
-# votar.clicar_botao_certo()
-# votar.clicar_botao_certo()
-# votar.clicar_botao_certo()
