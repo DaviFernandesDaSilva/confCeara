@@ -19,16 +19,14 @@ service = Service("C:\\ChromeDriver\\chromedriver-win32\\chromedriver-win32\\chr
 driver = webdriver.Chrome(service=service)  # Inicializa o driver do Chrome com o ChromeDriver especificado no objeto Service.
 
 # Acessa a página de votação do site
-driver.get("https://confutnordeste.com.br/premiacoes/votacao")  # Navega até o URL de votação.
-
-# url = 'https://confutnordeste.com.br/votacao'  # URL comentada, parece redundante com a linha anterior.
+driver.get("https://CENSURADO/CENSURADO/votacao")  # Navega até o URL de votação.
 
 headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \(KHTML, like Gecko) Chrome / 86.0.4240.198Safari / 537.36"}  
 # Define um cabeçalho 'User-Agent' para emular um navegador específico, mas não está sendo utilizado em requisições HTTP no código atual.
 
 class Votacao:  # Definindo a classe 'Votacao' para representar ações relacionadas à votação no site.
     def __init__(self):
-        self.SITE_LINK = "https://confutnordeste.com.br/premiacoes/votacao"  # URL do site de votação.
+        self.SITE_LINK = "https://CENSURADO/CENSURADO/votacao"  # URL do site de votação.
         
         self.SITE_MAP = {  # Mapeamento de XPaths para os elementos importantes da página.
             "perguntas": {  # Mapeia a pergunta "campanha".
