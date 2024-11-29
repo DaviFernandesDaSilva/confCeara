@@ -1,346 +1,148 @@
-from selenium import webdriver
-import time
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from selenium.webdriver .support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.select import Select
-from selenium import webdriver
-from threading import Thread
-from webdriver_manager.chrome import ChromeDriverManager
-import random
+from selenium import webdriver  # Importa o módulo webdriver do Selenium, usado para automatizar o navegador.
+import time  # Importa o módulo time, utilizado para adicionar pausas no código com time.sleep().
+from selenium.webdriver.chrome.service import Service  # Importa a classe Service para configurar o caminho do ChromeDriver.
+from webdriver_manager.chrome import ChromeDriverManager  # Importa o ChromeDriverManager, que facilita o gerenciamento do ChromeDriver.
+from selenium.webdriver.common.by import By  # Importa o By, usado para localizar elementos na página com base em seletores.
+from selenium.webdriver.support.wait import WebDriverWait  # Importa WebDriverWait, utilizado para esperar elementos estarem presentes ou prontos.
+from selenium.webdriver.support import expected_conditions as EC  # Importa EC (Expected Conditions), para condições de espera durante interações com o navegador.
+from selenium.webdriver.common.action_chains import ActionChains  # Importa ActionChains para ações mais complexas, como arrastar e soltar ou simular vários cliques.
+from selenium.webdriver.support.select import Select  # Importa Select, usado para interagir com campos de seleção (dropdowns).
+from selenium import webdriver  #
+from threading import Thread  # Importa Thread para possibilitar a execução de tarefas em paralelo.
+from webdriver_manager.chrome import ChromeDriverManager  # Importa novamente o ChromeDriverManager, de outra fonte, previnindo erros
+import random  # Importa o módulo random para gerar números ou escolhas aleatórias, mas não está sendo utilizado no código até agora.
 
-vezes = 0;
+vezes = 0  # Variável 'vezes' declarada, mas não está sendo usada neste trecho de código.
 
+# Criação de um objeto Service com o caminho do ChromeDriver
+service = Service("C:\\ChromeDriver\\chromedriver-win32\\chromedriver-win32\\chromedriver.exe")  # Caminho absoluto do ChromeDriver.
+driver = webdriver.Chrome(service=service)  # Inicializa o driver do Chrome com o ChromeDriver especificado no objeto Service.
 
-# Crie um objeto Service com o caminho do ChromeDriver
-service = Service("C:\\ChromeDriver\\chromedriver-win32\\chromedriver-win32\\chromedriver.exe")
-driver = webdriver.Chrome(service=service)
+# Acessa a página de votação do site
+driver.get("https://confutnordeste.com.br/premiacoes/votacao")  # Navega até o URL de votação.
 
-# Acessar o WhatsApp Web
-driver.get("https://confutnordeste.com.br/premiacoes/votacao")
+# url = 'https://confutnordeste.com.br/votacao'  # URL comentada, parece redundante com a linha anterior.
 
-#url = 'https://confutnordeste.com.br/votacao'
+headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \(KHTML, like Gecko) Chrome / 86.0.4240.198Safari / 537.36"}  
+# Define um cabeçalho 'User-Agent' para emular um navegador específico, mas não está sendo utilizado em requisições HTTP no código atual.
 
-headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \(KHTML, like Gecko) Chrome / 86.0.4240.198Safari / 537.36"}
-
-#site = requests.get(url, headers=headers)
-#soup = BeautifulSoup(site.content, 'html.parser')
-
-class Votacao:
+class Votacao:  # Definindo a classe 'Votacao' para representar ações relacionadas à votação no site.
     def __init__(self):
-        self.SITE_LINK = "https://confutnordeste.com.br/premiacoes/votacao"
+        self.SITE_LINK = "https://confutnordeste.com.br/premiacoes/votacao"  # URL do site de votação.
         
-        self.SITE_MAP = {
-            "perguntas": {
-                "campanha":{
+        self.SITE_MAP = {  # Mapeamento de XPaths para os elementos importantes da página.
+            "perguntas": {  # Mapeia a pergunta "campanha".
+                "campanha": {  # Mapeia o XPath da pergunta "campanha".
                     "xpath":"/html/body/div[3]/div/div/div/div/div/div/form/div[2]/h3"
                 }
             },
-            "buttons": {
-                "iniciar":{
+            "buttons": {  # Mapeia os botões importantes no formulário.
+                "iniciar": {  # XPath para o botão de iniciar.
                     "xpath": "/html/body/div[3]/div/div/div/div/div/div/div/form/div[1]/button[1]"
                 },
-                "campanha":{
+                "campanha": {  # XPath para o campo de seleção da campanha.
                     "xpath": "/html/body/div[3]/div/div/div/div/div/div/form/div[7]/div/div[1]/div[2]/p/label/input"
                 },
-                "proxima":{
+                "proxima": {  # XPath para o botão de "próxima".
                     "xpath":"/html/body/div[3]/div/div/div/div/div/div/div/form/div[2]/button[2]"
                 },
-                "nome":{
+                "nome": {  # XPath para o campo de nome.
                     "xpath":"/html/body/div[3]/div/div/div/div/div/div/div/form/div[20]/div[1]/div[1]/input"
                 },
-                "email":{
+                "email": {  # XPath para o campo de e-mail.
                     "xpath":"/html/body/div[3]/div/div/div/div/div/div/div/form/div[20]/div[1]/div[2]/input"
                 },
-                "fone":{
+                "fone": {  # XPath para o campo de telefone.
                     "xpath":"/html/body/div[3]/div/div/div/div/div/div/div/form/div[20]/div[1]/div[3]/input"
                 },
-                "inst":{
+                "inst": {  # XPath para o campo de instituição.
                     "xpath":"/html/body/div[3]/div/div/div/div/div/div/div/form/div[20]/div[1]/div[4]/select"
                 },
-                "finalizar":{
+                "finalizar": {  # XPath para o botão de "finalizar".
                     "xpath":"/html/body/div[3]/div/div/div/div/div/div/div/form/div[20]/div[1]/div[5]/div/button"
                 }
             }
         }
         
-        self.driver = webdriver.Chrome(service=service)
-        self.driver.set_window_size(640, 480)
-        #self.driver = webdriver.Chrome(executable_path="C:\\WebDrivers\\chromedriver.exe")
+        self.driver = webdriver.Chrome(service=service)  # Inicializa o WebDriver novamente (potencial redundância).
+        self.driver.set_window_size(640, 480)  # Define o tamanho da janela do navegador como 640x480 pixels.
         
-        
-    def abrir_site(self):
-        time.sleep(0.1)
-        self.driver.get(self.SITE_LINK)
-        time.sleep(0.1)
+    def abrir_site(self):  # Método para abrir o site de votação.
+        time.sleep(0.1)  # Pausa de 0.1 segundos.
+        self.driver.get(self.SITE_LINK)  # Acessa o link do site de votação.
+        time.sleep(0.1)  # Pausa novamente após o carregamento.
 
-    def comecar_quest(self):
-        time.sleep(0.1)
-        self.driver.execute_script(f"window.scrollTo(0, 0);")
-        time.sleep(0.1)
-        self.driver.find_element("xpath",self.SITE_MAP["buttons"]["iniciar"]["xpath"]).click()
-        time.sleep(0.1)
+    def comecar_quest(self):  # Método para iniciar a interação com o questionário.
+        time.sleep(0.1)  # Pausa para garantir que o carregamento seja concluído.
+        self.driver.execute_script(f"window.scrollTo(0, 0);")  # Rola a página para o topo.
+        time.sleep(0.1)  # Pausa breve.
+        self.driver.find_element("xpath",self.SITE_MAP["buttons"]["iniciar"]["xpath"]).click()  # Clica no botão "iniciar".
+        time.sleep(0.1)  # Pausa para aguardar a resposta do clique.
 
-    def identificar_pergunta(self):
-
+    def identificar_pergunta(self):  # Método vazio, parece destinado à identificação das perguntas.
         pass
         
-    def abrir_questionarios(self):
-        self.driver.execute_script(f"$('.fieldset').css('display','block');")
+    def abrir_questionarios(self):  # Método para abrir questionários.
+        self.driver.execute_script(f"$('.fieldset').css('display','block');")  # Executa um script para mostrar os questionários.
+
         
     def clicar_botao_certo(self):
+    # Lista dos nomes dos botões e seus valores correspondentes
+    botoes = [
+        ("cat_1", "2", 0.2),
+        ("cat_2", "2", 0.2),
+        ("cat_3", "3", 0.1),
+        ("cat_4", "2", 0.2),
+        ("cat_5", "1", 0.1),
+        ("cat_6", "1", 0.1),
+        ("cat_7", "3", 0.2),
+        ("cat_8", "3", 0.1),
+        ("cat_9", "1", 0.1),
+        ("cat_10", "3", 0.2),
+        ("cat_11", "2", 0.1),
+        ("cat_12", "1", 0.2),
+        ("cat_13", "1", 0.1),
+        ("cat_14", "3", 0.1),
+        ("cat_15", "2", 0.1),
+        ("cat_16", "1", 0.2),
+        ("cat_17", "2", 0.1),
+        ("cat_18", "3", 0.2),
+    ]
 
-        button1 = self.driver.find_element(By.NAME, "cat_1").is_displayed()
-        button2 = self.driver.find_element(By.NAME, "cat_2").is_displayed()
-        button3 = self.driver.find_element(By.NAME, "cat_3").is_displayed()
-        button4 = self.driver.find_element(By.NAME, "cat_4").is_displayed()
-        button5 = self.driver.find_element(By.NAME, "cat_5").is_displayed()
-        button6 = self.driver.find_element(By.NAME, "cat_6").is_displayed()
-        button7 = self.driver.find_element(By.NAME, "cat_7").is_displayed()
-        button8 = self.driver.find_element(By.NAME, "cat_8").is_displayed()
-        button9 = self.driver.find_element(By.NAME, "cat_9").is_displayed()
-        button10 = self.driver.find_element(By.NAME, "cat_10").is_displayed()
-        button11 = self.driver.find_element(By.NAME, "cat_11").is_displayed()
-        button12 = self.driver.find_element(By.NAME, "cat_12").is_displayed()
-        button13 = self.driver.find_element(By.NAME, "cat_13").is_displayed()
-        button14 = self.driver.find_element(By.NAME, "cat_14").is_displayed()
-        button15 = self.driver.find_element(By.NAME, "cat_15").is_displayed()
-        button16 = self.driver.find_element(By.NAME, "cat_16").is_displayed()
-        button17 = self.driver.find_element(By.NAME, "cat_17").is_displayed()
-        button18 = self.driver.find_element(By.NAME, "cat_18").is_displayed()
-        actions = ActionChains(self.driver)
-
-        if button1 is True:
-            #print("Cat_1 VISIVEL")
-            time.sleep(0.2)
-            button1element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_1' and @value='2']")
-
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button1element)
-            self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_1' and @value='2']").click()
-
-
+    for nome, valor, tempo_espera in botoes:
+        if self.driver.find_element(By.NAME, nome).is_displayed():
+            time.sleep(tempo_espera)
+            elemento = self.driver.find_element("xpath", f"//input[@type='radio' and @name='{nome}' and @value='{valor}']")
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", elemento)
+            elemento.click()
+            contadorFunc()
         else:
-            print("Cat_1 INVISIVEL")
+            print(f"{nome} INVISIVEL")
 
-        if button2 is True:
-            #print("Cat_2 VISIVEL")
-            time.sleep(0.2)
-            button2element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_2' and @value='2']")
-
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button2element)
-            self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_2' and @value='2']").click()
-
-        else:
-            print("Cat_2 INVISIVEL")
-
-        # if button3 is True:
-        #     #print("Cat_3 VISIVEL")
-        #     time.sleep(0.1)
-        #     button3element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_3' and @value='3']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button3element)
-        #     #self.driver.execute_script("arguments[0].click();", self.driver.find_element("xpath",".//input[@type='radio' and @value='0']"))
-        #     #ActionChains(self.driver).move_to_element(self.driver.find_element("xpath","//input[@type='radio' and @value='0']")).click(self.driver).perform()
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_3' and @value='3']").click()
-        #     #Valor 0
-        # else:
-        #     print("Cat_3 INVISIVEL")
-
-        # MENOS TELA MAIS ESPORTE CAT_4
-        if button4 is True:
-            #print("Cat_4 VISIVEL")
-            time.sleep(0.2)
-            button4element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_4' and @value='2']")
-
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button4element)
-            self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_4'  and @value='2']").click()
-        else:
-            print("Cat_4 INVISIVEL")
-
-        # if button5 is True:
-        #     #print("Cat_5 VISIVEL")
-        #     time.sleep(0.1)
-        #     #Valor 2
-        #     button5element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_5' and @value='1']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button5element)
-        #     #self.driver.execute_script("arguments[0].click();", self.driver.find_element("xpath",".//input[@type='radio' and @value='2']"))
-        #     #ActionChains(self.driver).move_to_element(self.driver.find_element("xpath","//input[@type='radio' and @value='2']")).click(self.driver).perform()
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_5' and @value='1']").click()
-        # else:
-        #     print("Cat_5 INVISIVEL")
-
-    # DOAR É JOGAR JUNTO CAT_6
-        # if button6 is True:
-        #     #print("Cat_6 VISIVEL")
-        #     time.sleep(0.1)
-        #     button6element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_6' and @value='1']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button6element)
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_6' and @value='1']").click()
-        # else:
-        #     print("Cat_6 INVISIVEL")        
-
-        if button7 is True:
-            #print("Cat_7 VISIVEL")
-            time.sleep(0.2)
-            button7element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_7' and @value='3']")
-
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button7element)
-            self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_7' and @value='3']").click()
-        else:
-            print("Cat_7 INVISIVEL")     
-
-        # if button8 is True:
-        #     #print("Cat_8 VISIVEL")
-        #     time.sleep(0.1)
-        #     button8element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_8' and @value='3']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button8element)
-        #     #Valor 0
-        #     #ActionChains(self.driver).move_to_element(self.driver.find_element("xpath","//input[@type='radio' and @value='0']")).click(self.driver).perform()
-        #     #self.driver.execute_script("arguments[0].click();", self.driver.find_element("xpath",".//input[@type='radio' and @value='0']"))
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_8' and @value='3']").click()
-        # else:
-        #     print("Cat_8 INVISIVEL")     
-
-        # if button9 is True:
-        #     #print("Cat_9 VISIVEL")
-        #     time.sleep(0.1)
-        #     button9element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_9' and @value='1']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button9element)
-        #     #Valor 2 ( Not Ceará )
-        #     #self.driver.execute_script("arguments[0].click();", self.driver.find_element("xpath",".//input[@type='radio' and @value='2']"))
-        #     #ActionChains(self.driver).move_to_element(self.driver.find_element("xpath","//input[@type='radio' and @value='2']")).click(self.driver).perform()
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_9' and @value='1']").click()
-        # else:
-        #     print("Cat_9 INVISIVEL")     
-
-        if button10 is True:
-            #print("Cat_10 VISIVEL")
-            time.sleep(0.2)
-            button10element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_10' and @value='3']")
-
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button10element)
-            self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_10' and @value='3']").click()
-        else:
-            print("Cat_10 INVISIVEL")
-
-        # if button11 is True:
-        #     #print("Cat_11 VISIVEL")
-        #     time.sleep(0.1)
-        #     button11element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_11' and @value='2']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button11element)
-        #     #self.driver.execute_script("arguments[0].click();", self.driver.find_element("xpath",".//input[@type='radio' and @value='0']"))
-        #     #ActionChains(self.driver).move_to_element(self.driver.find_element("xpath","//input[@type='radio' and @value='0']")).click(self.driver).perform()
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_11' and @value='2']").click()
-        #     #Valor 0 
-        # else:
-        #     print("Cat_11 INVISIVEL")
-
-        if button12 is True:
-            #print("Cat_12 VISIVEL")
-            time.sleep(0.2)
-            button12element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_12' and @value='1']")
-
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button12element)
-            self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_12' and @value='1']").click()
-        else:
-            print("Cat_12 INVISIVEL")
-
-        # if button13 is True:
-        #     #print("Cat_13 VISIVEL")
-        #     time.sleep(0.1)
-        #     button13element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_13' and @value='1']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button13element)
-        #     #Valor 2
-        #     #self.driver.execute_script("arguments[0].click();", self.driver.find_element("xpath",".//input[@type='radio' and @value='2']"))
-        #     #ActionChains(self.driver).move_to_element(self.driver.find_element("xpath","//input[@type='radio' and @value='2']")).click(self.driver).perform()
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_13' and @value='1']").click()
-        # else:
-        #     print("Cat_13 INVISIVEL")
-
-
-    # SANDRO QUEIROZ CAT_14
-        # if button14 is True:
-        #     #print("Cat_14 VISIVEL")
-        #     time.sleep(0.1)
-        #     button14element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_14' and @value='3']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button14element)
-        #     #Valor 2
-        #     #self.driver.execute_script("arguments[0].click();", self.driver.find_element("xpath",".//input[@type='radio' and @value='2']"))
-        #     #ActionChains(self.driver).move_to_element(self.driver.find_element("xpath","//input[@type='radio' and @value='2']")).click(self.driver).perform()
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_14' and @value='3']").click()
-        # else:
-        #     print("Cat_14 INVISIVEL")
-
-        # if button15 is True:
-        #     #print("Cat_15 VISIVEL")
-        #     time.sleep(0.1)
-        #     button15element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_15' and @value='3']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button15element)
-        #     #Valor 2
-        #     #self.driver.execute_script("arguments[0].click();", self.driver.find_element("xpath",".//input[@type='radio' and @value='2']"))
-        #     #ActionChains(self.driver).move_to_element(self.driver.find_element("xpath","//input[@type='radio' and @value='2']")).click(self.driver).perform()
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_15' and @value='3']").click()
-        # else:
-        #     print("Cat_15 INVISIVEL")
-
-        # if button16 is True:
-        #     #print("Cat_16 VISIVEL")
-        #     time.sleep(0.2)
-        #     button16element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_16' and @value='1']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button16element)
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_16' and @value='1']").click()
-        # else:
-        #     print("Cat_16 INVISIVEL")
-
-        # if button17 is True:
-        #     #print("Cat_17 VISIVEL")
-        #     time.sleep(0.1)
-        #     button17element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_17' and @value='2']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button17element)
-        #     #Valor 2
-        #     #self.driver.execute_script("arguments[0].click();", self.driver.find_element("xpath",".//input[@type='radio' and @value='2']"))
-        #     #ActionChaivons(self.driver).move_to_element(self.driver.find_element("xpath","//input[@type='radio' and @value='2']")).click(self.driver).perform()
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_17' and @value='2']").click()
-        # else:
-        #     print("Cat_17 INVISIVEL")
-
-        # if button18 is True:
-        #     #print("Cat_18 VISIVEL")
-        #     time.sleep(0.1)
-        #     button18element = self.driver.find_element("xpath","//input[@type='radio' and @name='cat_18' and @value='1']")
-
-        #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button18element)
-        #     #Valor 2
-        #     #self.driver.execute_script("arguments[0].click();", self.driver.find_element("xpath",".//input[@type='radio' and @value='2']"))
-        #     #ActionChains(self.driver).move_to_element(self.driver.find_element("xpath","//input[@type='radio' and @value='2']")).click(self.driver).perform()
-        #     self.driver.find_element("xpath",".//input[@type='radio' and @name='cat_18' and @value='1']").click()
-        # else:
-        #     print("Cat_18 INVISIVEL")    
-
-        contador_func()
 
    
     def clicar_no_botao_proxima(self):
-        time.sleep(1)
-
-        self.driver.find_element("xpath", '//button[text()="Próximo"]').click()
-        time.sleep(1)
+        try:
+            time.sleep(1)  # Espera fixa de 1 segundo para dar tempo de carregar a página
+    
+            # Verificar se o botão está visível e habilitado antes de clicar
+            botao_proxima = self.driver.find_element("xpath", '//button[text()="Próximo"]')
+    
+            # Garantir que o botão está visível e habilitado
+            if botao_proxima.is_displayed() and botao_proxima.is_enabled():
+                botao_proxima.click()  # Clica no botão "Próximo"
+                print("Botão 'Próximo' clicado.")
+            else:
+                print("O botão 'Próximo' não está visível ou habilitado.")
+    
+        except Exception as e:
+            print(f"Erro ao clicar no botão 'Próximo': {e}")
                
     def inserir_campos(self):
+        # Pausa Breve
         time.sleep(0.2)
+
+        #Pessoas pré geradas pros campos
         pessoas = [
     ["Davi F", "davipbr12@gmail.com", "(85) 99214-5555"],
     ["Bianca Ferreira", "biancaferreira@gmail.com", "(85) 99874-2233"],
@@ -481,89 +283,108 @@ class Votacao:
     ["Mariana Figueiredo", "mariana.figueiredo60@gmail.com", "(85) 92248-3716"],
     ["Clara Freitas", "clara.freitas83@outlook.com", "(85) 94429-7835"]
 ]
+        # Gera um índice aleatório para selecionar uma pessoa da lista 'pessoas'
         indice_random = random.randint(0, len(pessoas) - 1)
-
-        # Acessa diretamente a pessoa escolhida
+        
+        # Acessa os dados da pessoa escolhida com base no índice gerado
         nameF, emailF, foneF = pessoas[indice_random]
-
-        #GERAR NOME
+        
+        # Preenche o campo de Nome com o valor gerado aleatoriamente
         name_element = self.driver.find_element("xpath", self.SITE_MAP["buttons"]["nome"]["xpath"])
         ActionChains(self.driver).send_keys_to_element(name_element, nameF).perform()
-
-        #GERAR EMAIL
-
+        
+        # Aguarda um breve momento antes de preencher o próximo campo
         time.sleep(0.2)
+        
+        # Preenche o campo de Email com o valor gerado aleatoriamente
         email_element = self.driver.find_element("xpath", self.SITE_MAP["buttons"]["email"]["xpath"])
         ActionChains(self.driver).send_keys_to_element(email_element, emailF).perform()
-
-        #GERAR FONE
-
+        
+        # Aguarda um breve momento antes de preencher o próximo campo
         time.sleep(0.2)
+        
+        # Preenche o campo de Telefone com o valor gerado aleatoriamente
         fone_element = self.driver.find_element("xpath", self.SITE_MAP["buttons"]["fone"]["xpath"])
         ActionChains(self.driver).send_keys_to_element(fone_element, foneF).perform()
-
+        
+        # Aguarda um breve momento antes de preencher o próximo campo
         time.sleep(0.2)
-        select_element = self.driver.find_element("xpath",self.SITE_MAP["buttons"]["inst"]["xpath"])
+        
+        # Preenche o campo de Instituição com o valor "Torcedor" no campo de seleção
+        select_element = self.driver.find_element("xpath", self.SITE_MAP["buttons"]["inst"]["xpath"])
         select = Select(select_element)
         select.select_by_value('Torcedor')
 
     
     def confirmar_votacao(self):
+        # Pausa rápida antes de clicar no botão de finalizar
         time.sleep(0.1)
+        # Encontra o botão de finalizar votação e clica nele
         self.driver.find_element("xpath",self.SITE_MAP["buttons"]["finalizar"]["xpath"]).click()
         time.sleep(0.2)
+        # Aceita o alerta de confirmação de finalização
         self.driver.switch_to.alert.accept()
-        time.sleep(0.1)       
-
+        time.sleep(0.1)
+    
     def rodar_indefinidamente(self):
-        while True:  # Loop infinito para rodar as ações continuamente
+        # Loop infinito que executa as ações continuamente
+        while True:  
+            # Executa o início do questionário
             self.comecar_quest()
+            # Abre os questionários disponíveis
             self.abrir_questionarios()
+            # Clica no botão correto para avançar
             self.clicar_botao_certo()
+            # Preenche os campos necessários
             self.inserir_campos()
+            # Confirma a votação
             self.confirmar_votacao()
-            time.sleep(1)  # Pausa entre as ações, pode ser ajustado conforme necessário
-
+            time.sleep(1)  # Pausa de 1 segundo entre as ações, ajustável conforme necessário
+    
     def set_tamanho_tela(self, largura, altura):
-        """Define o tamanho da janela"""
+        """Define o tamanho da janela do navegador"""
         self.driver.set_window_size(largura, altura)
-
-def iniciar_votacao_em_janela():
-    votar = Votacao()
-    votar.abrir_site()
-    votar.set_tamanho_tela(600, 300)
-    votar.rodar_indefinidamente()  # Chama o loop infinito para executar as ações indefinidamente
-
-def votacaoFinalizada():
-    print(f"Votação Finalizada")
-
-def contador():
-    # Variável local para contar
-    count = 0
     
-    # Função interna que incrementa o contador
-    def incrementar():
-        nonlocal count  # Informa que queremos usar a variável count da função externa
-        count += 1
-        print(f"Votações Finalizadas: {count}")
+    def iniciar_votacao_em_janela():
+        # Cria uma instância de Votacao e inicia o processo
+        votar = Votacao()
+        votar.abrir_site()  # Abre o site da votação
+        votar.set_tamanho_tela(600, 300)  # Define o tamanho da janela
+        votar.rodar_indefinidamente()  # Inicia o loop infinito para rodar as ações
     
-    return incrementar
-contador_func = contador()
+    def votacaoFinalizada():
+        # Imprime uma mensagem quando a votação é finalizada
+        print(f"Votação Finalizada")
+    
+    def contador():
+        # Função que mantém e incrementa um contador para as votações finalizadas
+        count = 0  # Inicializa o contador de votações finalizadas
+        
+        def incrementar():
+            nonlocal count  # Usa a variável count da função externa
+            count += 1  # Incrementa o contador
+            print(f"Votações Finalizadas: {count}")  # Exibe o número de votações finalizadas
+            
+        return incrementar  # Retorna a função que pode ser chamada para incrementar o contador
 
-# Criação de várias janelas (por exemplo, 3)
-num_janelas = 10  # Defina quantas janelas você deseja abrir simultaneamente
-threads = []
 
-largura_da_tela = 300
-altura_da_tela = 500
+contador_func = contador()  # Cria uma instância do contador
 
-espaco_entre_janelas = 50
+# Criação de várias janelas para rodar a votação simultaneamente
+num_janelas = 10  # Número de janelas a serem abertas simultaneamente
+threads = []  # Lista para armazenar as threads
+
+largura_da_tela = 300  # Define a largura da janela
+altura_da_tela = 500  # Define a altura da janela
+
+espaco_entre_janelas = 50  # Define o espaço entre as janelas abertas
 
 for i in range(num_janelas):
+    # Calcula a posição X de cada janela para que não se sobreponham
     posicao_x = i * (largura_da_tela + espaco_entre_janelas)
-    posicao_y = 0 
-    # Inicia a votação em cada janela usando threads para executar simultaneamente
+    posicao_y = 0  # Mantém a posição Y fixada para todas as janelas
+    # Cria e inicia uma nova thread para cada janela de votação
     t = Thread(target=iniciar_votacao_em_janela)
-    threads.append(t)
-    t.start()
+    threads.append(t)  # Adiciona a thread à lista
+    t.start()  # Inicia a thread
 
